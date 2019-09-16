@@ -140,6 +140,7 @@ def check_file_overlap(file1, file2):
 
 
 def main(path):
+    sorted_frames = dict()
     dist = []
     list = []
     stations = os.listdir(path)
@@ -213,6 +214,13 @@ def main(path):
 
                 print(len(finding), finding)
                 print()
+                if finding[0][-1] not in sorted_frames:
+                    sorted_frames[finding[0][-1]] = []
+                    sorted_frames[finding[0][-1]].append(finding)
+
+                else:
+                    sorted_frames[finding[0][-1]].append(finding)
 
         conn.close()
         os.remove("planespotting"+os.sep+"data.db") #Throwing away the db
+    print(sorted_frames)
