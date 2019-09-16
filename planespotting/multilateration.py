@@ -33,7 +33,8 @@ def create_table():
              gs_id TEXT,
              gs_lat FLOAT,
              gs_lon FLOAT,
-             gs_alt FLOAT);''')
+             gs_alt FLOAT,
+             ICAO);''')
 
     conn.close()
 
@@ -186,8 +187,8 @@ def main(path):
 
                 if frame['is_repeated'] != int(1):  #skipping the repeated frames in the same file, no idea why they even exist
                     gs_x, gs_y, gs_z = get_cartesian_coordinates(data["meta"]["gs_lat"], data["meta"]["gs_lon"], data["meta"]["gs_alt"], True)
-                    record = (i, frame['raw'], frame['adsb_msg'], frame['timestamp'], frame['SamplePos'], frame['df'], frame['tc'], frame['x'], frame['y'], frame['z'], frame['time_propagation'], data['meta']['file'], data['meta']['mlat_mode'], data['meta']['file'], gs_x, gs_y, gs_z)
-                    conn.execute("INSERT INTO frames VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", record)
+                    record = (i, frame['raw'], frame['adsb_msg'], frame['timestamp'], frame['SamplePos'], frame['df'], frame['tc'], frame['x'], frame['y'], frame['z'], frame['time_propagation'], data['meta']['file'], data['meta']['mlat_mode'], data['meta']['file'], gs_x, gs_y, gs_z, frame['ICAO'])
+                    conn.execute("INSERT INTO frames VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?, ?)", record)
                     i += 1
 
                 else:
@@ -208,7 +209,7 @@ def main(path):
         for frames in uniq_frames: #Looking for the same message in different station file
             cur.execute("SELECT * FROM frames WHERE adsb_msg = ?", (frames,))
             finding = cur.fetchall()
-            if len(finding) == 3:
+            if len(finding) >= 3:
 
                 print(len(finding), finding)
                 print()
